@@ -2,6 +2,9 @@
 #include <stdbool.h>
 #include <string.h>
 
+#define KEY_ESC 27
+#define KEY_RETURN 10
+
 typedef struct mode {
   char *name;
   void (*handler)(int ch);
@@ -45,7 +48,7 @@ void insert_mode(int ch) {
   int y, x;
 
   switch (ch) {
-  case 27:
+  case KEY_ESC:
     curs_set(2);
     global.current_mode = global.modes[0];
     break;
@@ -68,18 +71,21 @@ void command_mode(int ch) {
   // - Any other character is added to the command buffer
   int y, x;
   switch (ch) {
-  case 10:
+  case KEY_RETURN: // ENTER
     if (strcmp(global.command_buf, "q") == 0) {
       global.running = false;
     }
     // fall through
-  case 27:
+  case KEY_ESC:
     move(global.rows - 1, 0);
     clrtoeol();
     move(global.ret_y, global.ret_x);
     global.current_mode = global.modes[0];
     break;
   case KEY_BACKSPACE:
+    if (strlen(global.command_buf) == 0) {
+      break;
+    }
     getyx(stdscr, y, x);
     move(y, x - 1);
     delch();
@@ -87,6 +93,10 @@ void command_mode(int ch) {
     break;
   default:
     // Add character to command buffer
+    if (strlen(global.command_buf) >= sizeof(global.command_buf) - 1) {
+      // Buffer is full
+      break;
+    }
     global.command_buf[strlen(global.command_buf)] = ch;
     addch(ch);
     break;
