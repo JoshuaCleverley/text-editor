@@ -1,20 +1,28 @@
 #include <ncurses.h>
 
 int main() {
-  int ch;
+  int ch, y, x;
 
   initscr();
   raw();
   keypad(stdscr, TRUE);
   noecho();
 
-  while (true) {
+  do {
     ch = getch();
-    if (ch == 27)
-      break;
-    printw("Keycode: %d\n", ch);
+
+    // Check if key is backspace
+    // If it is, move the cursor back one space and delete the character
+    if (ch == KEY_BACKSPACE) {
+      getyx(stdscr, y, x);
+      move(y, x - 1);
+      delch();
+      refresh();
+      continue;
+    } else
+      addch(ch);
     refresh();
-  }
+  } while (ch != 'q');
 
   endwin();
 
