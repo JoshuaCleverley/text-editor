@@ -58,20 +58,28 @@ void handle_command(char *command_out, int buf_size) {
 #define SET_COMMAND_OUT(str, ...)                                              \
   snprintf(command_out, buf_size, str, ##__VA_ARGS__);
 #define CMP_COMMAND(str) strcmp(global.command_buf, str) == 0
+#define UNIMPLEMENTED()                                                        \
+  SET_COMMAND_OUT("INFO: Command '%s' not implemented.", global.command_buf);
+#define CMP_COMMANDS(str1, str2) (CMP_COMMAND(str1) || CMP_COMMAND(str2))
 
-  if (CMP_COMMAND("q")) {
+  if (CMP_COMMANDS("quit", "q")) {
     SET_COMMAND_OUT("Quitting editor.");
     global.running = false;
-  } else if (CMP_COMMAND("w")) {
-    SET_COMMAND_OUT("Saving file.");
-  } else if (CMP_COMMAND("help") || CMP_COMMAND("?") || CMP_COMMAND("h")) {
-    SET_COMMAND_OUT("Available commands: q, w, help");
+  } else if (CMP_COMMANDS("w", "write")) {
+    UNIMPLEMENTED();
+  } else if (CMP_COMMANDS("wq", "writequit")) {
+    UNIMPLEMENTED();
+  } else if (CMP_COMMANDS("open", "o")) {
+    UNIMPLEMENTED();
+  } else if (CMP_COMMANDS("help", "h") || CMP_COMMAND("?")) {
+    SET_COMMAND_OUT("Available commands: quit, write, writequit, open, help");
   } else if (CMP_COMMAND("")) {
     // No output if no command is entered (just return to normal mode)
   } else {
     SET_COMMAND_OUT("ERROR: Command '%s' not found.", global.command_buf);
   }
 
+#undef UNIMPLEMENTED
 #undef CMP_COMMAND
 #undef SET_COMMAND_OUT
 }
