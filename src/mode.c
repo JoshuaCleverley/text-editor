@@ -54,6 +54,28 @@ void insert_mode(int ch) {
   }
 }
 
+void handle_command(char *command_out, int buf_size) {
+#define SET_COMMAND_OUT(str, ...)                                              \
+  snprintf(command_out, buf_size, str, ##__VA_ARGS__);
+#define CMP_COMMAND(str) strcmp(global.command_buf, str) == 0
+
+  if (CMP_COMMAND("q")) {
+    SET_COMMAND_OUT("Quitting editor.");
+    global.running = false;
+  } else if (CMP_COMMAND("w")) {
+    SET_COMMAND_OUT("Saving file.");
+  } else if (CMP_COMMAND("help") || CMP_COMMAND("?") || CMP_COMMAND("h")) {
+    SET_COMMAND_OUT("Available commands: q, w, help");
+  } else if (CMP_COMMAND("")) {
+    // No output if no command is entered (just return to normal mode)
+  } else {
+    SET_COMMAND_OUT("ERROR: Command '%s' not found.", global.command_buf);
+  }
+
+#undef CMP_COMMAND
+#undef SET_COMMAND_OUT
+}
+
 void command_mode(int ch) {
   // In command mode:
   // - 'ESC' returns to normal mode
@@ -61,15 +83,18 @@ void command_mode(int ch) {
   // - 'ENTER' executes the command
   // - Any other character is added to the command buffer
   int y, x;
+  char command_out[256] = {0};
+
   switch (ch) {
-  case KEY_RETURN: // ENTER
-    if (strcmp(global.command_buf, "q") == 0) {
-      global.running = false;
-    }
+  case KEY_RETURN:
+    handle_command(command_out, sizeof(command_out));
     // fall through
   case KEY_ESC:
     move(global.rows - 1, 0);
     clrtoeol();
+    if (strlen(command_out) > 0) {
+      mvprintw(global.rows - 1, 0, "%s", command_out);
+    }
     move(global.ret_y, global.ret_x);
     global.current_mode = global.modes[0];
     break;
