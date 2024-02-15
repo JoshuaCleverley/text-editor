@@ -4,10 +4,10 @@ CFLAGS = -Wall -Wextra -g -c
 LFLAGS = -lncurses
 
 SRC_DIR = src
-SOURCES = $(SRC_DIR)/main.c
+SOURCES = $(SRC_DIR)/main.c $(SRC_DIR)/mode.c $(SRC_DIR)/global.c
 
 OBJECT_DIR = obj
-OBJECTS = $(OBJECT_DIR)/main.o
+OBJECTS = $(OBJECT_DIR)/main.o $(OBJECT_DIR)/mode.o $(OBJECT_DIR)/global.o
 
 OUTPUT_DIR = build
 OUTPUT_FILE = out
@@ -19,6 +19,12 @@ $(OUTPUT_DIR)/$(OUTPUT_FILE): $(OBJECTS) | $(OUTPUT_DIR)
 
 $(OBJECT_DIR)/main.o: $(SRC_DIR)/main.c | $(OBJECT_DIR)
 	$(CC) -o $(OBJECT_DIR)/main.o $(CFLAGS) $(SRC_DIR)/main.c
+
+$(OBJECT_DIR)/mode.o: $(SRC_DIR)/mode.c | $(OBJECT_DIR)
+	$(CC) -o $(OBJECT_DIR)/mode.o $(CFLAGS) $(SRC_DIR)/mode.c
+
+$(OBJECT_DIR)/global.o: $(SRC_DIR)/global.c | $(OBJECT_DIR)
+	$(CC) -o $(OBJECT_DIR)/global.o $(CFLAGS) $(SRC_DIR)/global.c
 
 $(OBJECT_DIR):
 	mkdir -p $(OBJECT_DIR)
