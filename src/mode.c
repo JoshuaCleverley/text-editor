@@ -79,6 +79,7 @@ void handle_command(char *command_out, int buf_size) {
     SET_COMMAND_OUT("ERROR: Command '%s' not found.", global.command_buf);
   }
 
+#undef CMP_COMMANDS
 #undef UNIMPLEMENTED
 #undef CMP_COMMAND
 #undef SET_COMMAND_OUT
