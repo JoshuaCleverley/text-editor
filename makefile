@@ -1,7 +1,7 @@
 CC = gcc
 
 CFLAGS = -Wall -Wextra -g -c
-LDFLAGS = -lncurses
+LFLAGS = -lncurses
 
 SRC_DIR = src
 SOURCES = $(SRC_DIR)/main.c
@@ -13,7 +13,7 @@ OUTPUT_DIR = build
 OUTPUT_FILE = out
 
 all: $(OBJECTS) | $(OUTPUT_DIR)
-	$(CC) -g $(OBJECTS) -o $(OUTPUT_DIR)/$(OUTPUT_FILE) $(LDFLAGS)
+	$(CC) -g $(OBJECTS) -o $(OUTPUT_DIR)/$(OUTPUT_FILE) $(LFLAGS)
 
 $(OBJECT_DIR)/main.o: $(SRC_DIR)/main.c | $(OBJECT_DIR)
 	$(CC) -o $(OBJECT_DIR)/main.o $(CFLAGS) $(SRC_DIR)/main.c
