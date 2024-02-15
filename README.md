@@ -16,7 +16,7 @@ cd text-editor
 
 3. Build or run source
 ```Shell
-make build
+make all 
 ./build/out
 
 make run

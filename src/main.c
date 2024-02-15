@@ -103,14 +103,21 @@ void command_mode(int ch) {
   }
 }
 
-int main() {
-  // Declare variables
-  int ch, y, x;
+void init_global() {
   global.modes[0] = (Mode){" NORMAL MODE", normal_mode};
   global.modes[1] = (Mode){" INSERT MODE", insert_mode};
   global.modes[2] = (Mode){"COMMAND MODE", command_mode};
   global.current_mode = global.modes[0];
   global.running = true;
+  global.ret_y = 0;
+  global.ret_x = 0;
+  memset(global.command_buf, 0, sizeof(global.command_buf));
+  getmaxyx(stdscr, global.rows, global.cols);
+}
+
+int main() {
+  // Declare variables
+  int ch, y, x;
 
   // Initialize ncurses
   initscr();
@@ -118,7 +125,8 @@ int main() {
   keypad(stdscr, TRUE);
   noecho();
   set_escdelay(25);
-  getmaxyx(stdscr, global.rows, global.cols);
+
+  init_global();
 
   while (global.running) {
     // Print mode in bottom right

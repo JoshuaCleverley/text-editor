@@ -12,7 +12,9 @@ OBJECTS = $(OBJECT_DIR)/main.o
 OUTPUT_DIR = build
 OUTPUT_FILE = out
 
-all: $(OBJECTS) | $(OUTPUT_DIR)
+all: $(OUTPUT_DIR)/$(OUTPUT_FILE)
+
+$(OUTPUT_DIR)/$(OUTPUT_FILE): $(OBJECTS) | $(OUTPUT_DIR)
 	$(CC) -g $(OBJECTS) -o $(OUTPUT_DIR)/$(OUTPUT_FILE) $(LFLAGS)
 
 $(OBJECT_DIR)/main.o: $(SRC_DIR)/main.c | $(OBJECT_DIR)
