@@ -47,11 +47,34 @@ void insert_mode(int ch) {
     getyx(stdscr, y, x);
     move(y, x - 1);
     delch();
+    global.file_buf[strlen(global.file_buf) - 1] = '\0';
     break;
   default:
+    // Add character to screen and file buf
     addch(ch);
+    global.file_buf[strlen(global.file_buf)] = ch;
     break;
   }
+}
+
+char *write_file_to_disk(const char *filename) {
+  FILE *file = fopen(filename, "w");
+  if (file == NULL) {
+    return "ERROR: Could not open file for writing.";
+  }
+  fwrite(global.file_buf, sizeof(char), strlen(global.file_buf), file);
+  fclose(file);
+  return "INFO: File written to disk.";
+}
+
+char *read_file_from_disk(const char *filename) {
+  FILE *file = fopen(filename, "r");
+  if (file == NULL) {
+    return "ERROR: Could not open file for reading.";
+  }
+  fread(global.file_buf, sizeof(char), sizeof(global.file_buf), file);
+  fclose(file);
+  return "INFO: File read from disk.";
 }
 
 void handle_command(char *command_out, int buf_size) {
@@ -66,11 +89,28 @@ void handle_command(char *command_out, int buf_size) {
     SET_COMMAND_OUT("Quitting editor.");
     global.running = false;
   } else if (CMP_COMMANDS("w", "write")) {
-    UNIMPLEMENTED();
+    // Write file_buf to disk
+    SET_COMMAND_OUT("%s", write_file_to_disk("filename.txt"));
   } else if (CMP_COMMANDS("wq", "writequit")) {
     UNIMPLEMENTED();
   } else if (CMP_COMMANDS("open", "o")) {
-    UNIMPLEMENTED();
+    // Read file into file_buf
+    SET_COMMAND_OUT("%s", read_file_from_disk("filename.txt"));
+    // Clear screen and print file_buf
+    clear();
+    printw("%s", global.file_buf);
+    // find the cursor position at end of file_buf
+    int y = 0, x = 0;
+    for (long unsigned int i = 0; i < strlen(global.file_buf); i++) {
+      if (global.file_buf[i] == '\n') {
+        y++;
+        x = 0;
+      } else {
+        x++;
+      }
+    }
+    global.ret_y = y;
+    global.ret_x = x;
   } else if (CMP_COMMANDS("help", "h") || CMP_COMMAND("?")) {
     SET_COMMAND_OUT("Available commands: quit, write, writequit, open, help");
   } else if (CMP_COMMAND("")) {

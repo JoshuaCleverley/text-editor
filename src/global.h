@@ -10,6 +10,7 @@ typedef struct global {
   int rows, cols;
   int ret_y, ret_x;
   char command_buf[256];
+  char file_buf[1024];
 } Global;
 
 void init_global();
