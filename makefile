@@ -1,6 +1,6 @@
 CC = gcc
 
-CFLAGS = -Wall -Wextra -g -c
+CFLAGS = -Wall -Wextra -Wshadow -Wpedantic -Werror -g -c
 LFLAGS = -lncurses
 
 SRC_DIR = src
