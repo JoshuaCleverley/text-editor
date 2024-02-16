@@ -57,22 +57,29 @@ void insert_mode(int ch) {
   }
 }
 
-char *write_file_to_disk(const char *filename) {
+char *write_file_to_disk(char *filename) {
   FILE *file = fopen(filename, "w");
   if (file == NULL) {
     return "ERROR: Could not open file for writing.";
   }
-  fwrite(global.file_buf, sizeof(char), strlen(global.file_buf), file);
+  if (fwrite(global.file_buf, sizeof(char), strlen(global.file_buf), file) ==
+      0) {
+    return "ERROR: Could not write file to disk.";
+  }
   fclose(file);
   return "INFO: File written to disk.";
 }
 
-char *read_file_from_disk(const char *filename) {
+char *read_file_from_disk(char *filename) {
   FILE *file = fopen(filename, "r");
   if (file == NULL) {
     return "ERROR: Could not open file for reading.";
   }
-  fread(global.file_buf, sizeof(char), sizeof(global.file_buf), file);
+  memset(global.file_buf, 0, sizeof(global.file_buf));
+  if (fread(global.file_buf, sizeof(char), sizeof(global.file_buf), file) ==
+      0) {
+    return "ERROR: Could not read file from disk.";
+  }
   fclose(file);
   return "INFO: File read from disk.";
 }
@@ -92,12 +99,14 @@ void handle_command(char *command_out, int buf_size) {
     // Write file_buf to disk
     SET_COMMAND_OUT("%s", write_file_to_disk("filename.txt"));
   } else if (CMP_COMMANDS("wq", "writequit")) {
-    UNIMPLEMENTED();
+    SET_COMMAND_OUT("%s", write_file_to_disk("filename.txt"));
+    global.running = false;
   } else if (CMP_COMMANDS("open", "o")) {
     // Read file into file_buf
     SET_COMMAND_OUT("%s", read_file_from_disk("filename.txt"));
     // Clear screen and print file_buf
     clear();
+    move(0, 0);
     printw("%s", global.file_buf);
     // find the cursor position at end of file_buf
     int y = 0, x = 0;
